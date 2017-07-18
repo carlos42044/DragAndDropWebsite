@@ -1,4 +1,7 @@
+var ogImage;
 function dragNdrop() {
+						container = document.querySelector("div");
+
 						var canvas = document.getElementById("dropzone"),
 							context = canvas.getContext("2d"),
 							img = document.createElement("img"),
@@ -13,13 +16,28 @@ function dragNdrop() {
 							};
 
 						// Adding instructions
-						context.fillText("Drop an image onto the canvas", 240, 200);
-						context.fillText("Click a spot to set as brush color", 240, 220);
+						// why does canvas.width/3 work and not canvas.width/2?
+						context.font="15px Arial";
+						context.textAlign="center";
+						context.fillText("Drop and image onto the canvas", canvas.width/2, canvas.height/2 -20);
+						context.fillText("Click a spot to set as brush color", canvas.width/2, canvas.height/2 +20);
 
 						// Image for loading
 						img.addEventListener("load", function () {
 							clearCanvas();
-							context.drawImage(img, 0, 0);
+							canvas.width = img.width;
+							canvas.height = img.height;
+
+							//context.scale(2, 2) // Doubles size of anything draw to canvas.
+
+							context.drawImage(img, 0,0);
+							// Trying to save the original image
+							ogImage = canvas.toDataURL("image/png");
+							//window.open(canvas.toDataURL("image/png"));
+
+
+							//var containerWidth = container.getBoundingClientRect().width;
+							//alert("the width of the container is " + containerWidth);
 						}, false);
 
 						// Detect mousedown
@@ -27,6 +45,10 @@ function dragNdrop() {
 							clearCanvas();
 							mouseDown = true;
 							context.beginPath();
+							var input = document.createElement("input");
+							input.type = "text";
+							//input.className = "css-class-name"; // set the CSS class
+							document.getElementById("main-content").appendChild(input); //
 						}, false);
 
 						// Detect mouseup
@@ -73,37 +95,33 @@ function dragNdrop() {
 						var saveImage = document.createElement("button");
 						saveImage.innerHTML = "Save canvas";
 						saveImage.addEventListener("click", function (evt) {
-							window.open(canvas.toDataURL("image/png"));
+							var dt = canvas.toDataURL("image/png");
+							//alert("button clicked");
+							//this.href = dt;
+							window.open(dt);
+							//window.open(canvas.toDataURL("image/png"));
 							evt.preventDefault();
 						}, false);
 						document.getElementById("main-content").appendChild(saveImage);
-					}
 
-// function allowDrop(ev) {
-//     ev.preventDefault();
-// }
+						var button = document.getElementById('btn-download');
+						button.addEventListener('click', function (e) {
+						    //var dataURL = canvas.toDataURL('image/png');
+						    window.open(ogImage);
+						});
 
-// function drag(ev) {
-//     ev.dataTransfer.setData("text", ev.target.id);
-// }
+						 // put it into the DOM
+						// var imgd = context.getImageData(0, 0, canvas.width, canvas.height);
+						// var pix = imgd.data;
+						// // Loop over each pixel and invert the color.
+						// var red = 0;
+						// for (var i = 0, n = pix.length; i < n; i += 4) {
+						//     pix[i  ] = 255 - pix[i  ]; // red
+						//     pix[i+1] = 255 - pix[i+1]; // green
+						//     pix[i+2] = 255 - pix[i+2]; // blue
+						//     // i+3 is alpha (the fourth element)
+						// }
+						// alert("red value ")
+						// context.putImageData(imgd, 0, 0);
 
-// function drop(ev) {
-//     ev.preventDefault();
-//     var data = ev.dataTransfer.getData("text");
-//     ev.target.appendChild(document.getElementById(data));
-// }
-
-// var canvas = document.getElementById("dropzone"),
-// 	context = canvas.getContext("2d"),
-// 	img = document.createElement("img"),
-// 	mouseDown = false,
-// 	brushColor = "rgb(0, 0, 0)",
-// 	hasText = true,
-// 	clearCanvas = function() {
-// 		if (hasText) {
-// 			context.clearRect(0, 0, canvas.width, canvas.height);
-// 			hasText = false;
-// 		}
-// 	};
-
-// context.fillText("Drop an image onto the canvas", 240, 200);
+}
