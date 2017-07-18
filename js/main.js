@@ -11,35 +11,35 @@ function dragNdrop() {
 									hasText = false;
 								}
 							};
-							
+
 						// Adding instructions
 						context.fillText("Drop an image onto the canvas", 240, 200);
 						context.fillText("Click a spot to set as brush color", 240, 220);
-						
-						// Image for loading	
+
+						// Image for loading
 						img.addEventListener("load", function () {
 							clearCanvas();
 							context.drawImage(img, 0, 0);
 						}, false);
-						
+
 						// Detect mousedown
 						canvas.addEventListener("mousedown", function (evt) {
 							clearCanvas();
 							mouseDown = true;
 							context.beginPath();
 						}, false);
-						
+
 						// Detect mouseup
 						canvas.addEventListener("mouseup", function (evt) {
 							mouseDown = false;
 							var colors = context.getImageData(evt.layerX, evt.layerY, 1, 1).data;
 							brushColor = "rgb(" + colors[0] + ", " + colors[1] + ", " + colors[2] + ")";
 						}, false);
-						
+
 						// Draw, if mouse button is pressed
 						canvas.addEventListener("mousemove", function (evt) {
 							if (mouseDown) {
-								context.strokeStyle = brushColor;								
+								context.strokeStyle = brushColor;
 								context.lineWidth = 20;
 								context.lineJoin = "round";
 								context.lineTo(evt.layerX+1, evt.layerY+1);
@@ -68,7 +68,7 @@ function dragNdrop() {
 							}
 							evt.preventDefault();
 						}, false);
-						
+
 						// Save image
 						var saveImage = document.createElement("button");
 						saveImage.innerHTML = "Save canvas";
@@ -93,10 +93,10 @@ function dragNdrop() {
 //     ev.target.appendChild(document.getElementById(data));
 // }
 
-// var canvas = document.getElementById("dropzone"), 
-// 	context = canvas.getContext("2d"), 
-// 	img = document.createElement("img"), 
-// 	mouseDown = false, 
+// var canvas = document.getElementById("dropzone"),
+// 	context = canvas.getContext("2d"),
+// 	img = document.createElement("img"),
+// 	mouseDown = false,
 // 	brushColor = "rgb(0, 0, 0)",
 // 	hasText = true,
 // 	clearCanvas = function() {
