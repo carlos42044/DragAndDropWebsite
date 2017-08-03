@@ -1,10 +1,12 @@
 
+
 var originalImage;
 var canvasFocus = false;
 var inputCreated = false;
 var input = document.createElement("input");
-
 var textEditID = 1000;
+
+var text
 
 function dragNdrop() {
 	container = document.querySelector("div");
@@ -12,8 +14,8 @@ function dragNdrop() {
 	var canvas = document.getElementById("dropzone"),
 		context = canvas.getContext("2d"),
 		img = document.createElement("img"),
-		mouseDown = false,
-		brushColor = "rgb(0, 0, 0)",
+		// mouseDown = false,
+		// brushColor = "rgb(0, 0, 0)",
 		hasText = true,
 		clearCanvas = function () {
 			if (hasText) {
@@ -62,8 +64,8 @@ function dragNdrop() {
 
 		var xPos = evt.clientX - canvas.getBoundingClientRect().left;
 		var yPos = evt.clientY - canvas.getBoundingClientRect().top;
-		mouseDown = true;
-		context.beginPath();
+		// mouseDown = true;
+		// context.beginPath();
 		drawNote(evt);
 		addTextBox();
 
@@ -85,20 +87,20 @@ function dragNdrop() {
 
 	// Mpuseup event listener
 	canvas.addEventListener("mouseup", function (evt) {
-		mouseDown = false;
-		var colors = context.getImageData(evt.layerX, evt.layerY, 1, 1).data;
-		brushColor = "rgb(" + colors[0] + ", " + colors[1] + ", " + colors[2] + ")";
+		// mouseDown = false;
+		// var colors = context.getImageData(evt.layerX, evt.layerY, 1, 1).data;
+		// brushColor = "rgb(" + colors[0] + ", " + colors[1] + ", " + colors[2] + ")";
 	}, false);
 
 	// Mousemove event listener
 	canvas.addEventListener("mousemove", function (evt) {
-		if (mouseDown) {
-			context.strokeStyle = brushColor;
-			context.lineWidth = 20;
-			context.lineJoin = "round";
-			context.lineTo(evt.layerX+1, evt.layerY+1);
-			context.stroke();
-		}
+		// if (mouseDown) {
+		// 	context.strokeStyle = brushColor;
+		// 	context.lineWidth = 20;
+		// 	context.lineJoin = "round";
+		// 	context.lineTo(evt.layerX+1, evt.layerY+1);
+		// 	context.stroke();
+		// }
 	}, false);
 
 	// dragover event listener
@@ -153,33 +155,38 @@ function addTextBox() {
 
 	//Create Labels
 	var label = document.createElement("Label");
-	label.innerHTML = "Edit id: " + textEditID++;
+	label.innerHTML = "Note #" + textEditID++ + ": ";
 
 	//Assign different attributes to the element.
 	element.setAttribute("type", "text");
-	element.setAttribute("value", "");
-	element.setAttribute("name", "Test Name");
+	element.setAttribute("placeholder", "Enter Notes");
+	element.setAttribute("name", "Notes");
 	element.setAttribute("style", "width:200px");
 
-	label.setAttribute("style", "font-weight:normal");
+	label.setAttribute("style", "font-weight:bold");
 
 	// 'foobar' is the div id, where new fields are to be added
-	var foo = document.getElementById("input-container");
+	var inputLabel = document.getElementById("notes");
 
 	//Append the element in page (in span).
-	foo.appendChild(label);
-	foo.appendChild(element);
+	inputLabel.appendChild(label);
+	inputLabel.appendChild(element);
 }
 
 function drawNote(evt) {
 	var canvas = document.getElementById("dropzone");
 	var ctx = canvas.getContext("2d");
+	
 	var xPos = evt.clientX - canvas.getBoundingClientRect().left;
 	var yPos = evt.clientY - canvas.getBoundingClientRect().top;
 
 	ctx.beginPath();
 	ctx.lineWidth="4";
 	ctx.strokeStyle="green";
-	ctx.rect(xPos,yPos,50,50);
+	ctx.rect(xPos-12.5,yPos-12.5,25,25);
 	ctx.stroke();
+}
+
+function whateverYouWant(xPos, yPos, text){
+
 }
