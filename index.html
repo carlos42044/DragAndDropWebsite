@@ -1,8 +1,9 @@
 </DOCTYPE html>
 <html lang="en">
 	<head>
-		<script type="text/javascript" src="http://livejs.com/live.js"></script>
+		<script src="js/smartcrop.js"></script>
 		<script src="js/CanvasInput.js"></script>
+
 		<meta charset=utf-8 />
 		<title>Hello World</title>
 
@@ -26,20 +27,22 @@
 		</style>
 	</head>
 	<body onload="dragNdrop()">
-		<p>Hello World, wedddddddddbsite</p>
-		<h1 align=center>Header (h1)</h1>
-		<h3>HTML (h3)</h3>
-		<h5>The basics (h5)</h5>
-
 		<script src="js/main.js"></script>
 
+		<p>Hello World, website</p>
+		<h1 align=center>Stempact Research</h1>
+		<h3>HTML (h3)</h3>
+		<h5>The basics (h5)</h5>
 		<br>
-   	<div id="main-content">
-		<canvas id="dropzone" width="500" height="500">I am canvas</canvas>
 
-		<a href="#" class="button" id="btn-download">Save Original</a>
+   	<div id="main-content" style="display: inline-block">
+			<canvas id="dropzone" width="500" height="500" tabindex="1">I am canvas</canvas>
+		</div>
+
+		<div id="input-container" style="display: inline-block">
 
 		</div>
+		<a href="#" class="button" id="btn-download">Save Original</a>
 
 		<form id="uploadDetails">
 			<fieldset>

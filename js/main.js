@@ -1,17 +1,10 @@
 
 var originalImage;
+var canvasFocus = false;
+var inputCreated = false;
+var input = document.createElement("input");
 
-
-
-//var canvas = document.getElementById("dropzone");
-// function getMousePos(canvas, evt) {
-//     var rect = canvas.getBoundingClientRect();
-//     print(x,y);
-//     return {
-//       x: evt.clientX - rect.left,
-//       y: evt.clientY - rect.top 
-//     };
-// }
+var textEditID = 1000;
 
 function dragNdrop() {
 	container = document.querySelector("div");
@@ -29,8 +22,7 @@ function dragNdrop() {
 			}
 		};
 
-	// Adding instructions
-	// why does canvas.width/3 work and not canvas.width/2?
+	// Adding instruction text
 	context.font="15px Arial";
 	context.textAlign="center";
 	context.fillText("Drop and image onto the canvas", canvas.width/2, canvas.height/2 -20);
@@ -39,9 +31,9 @@ function dragNdrop() {
 	// Image for loading
 	img.addEventListener("load", function () {
 		clearCanvas();
-
 		var imgTooLarge = false;
-		// if image is to big default to 500 x 500 size 
+
+		// if image is to big default to 500 x 500 size
 		if (img.width > 500) {
 			canvas.width = 500;
 			imgTooLarge = true;
@@ -57,63 +49,48 @@ function dragNdrop() {
 
 		//context.scale(2, 2) // Doubles size of anything draw to canvas.
 		imgTooLarge ? context.drawImage(img, 0, 0, 500, 500) : context.drawImage(img, 0, 0);
-		// Trying to save the original image
+
+		// save the original image
 		originalImage = canvas.toDataURL("image/png");
 		//window.open(canvas.toDataURL("image/png"));
-
-
-		//var containerWidth = container.getBoundingClientRect().width;
-		//alert("the width of the container is " + containerWidth);
 	}, false);
 
-	// Detect mousedown
+	// Mousedown event listener
 	canvas.addEventListener("mousedown", function (evt) {
+		canvasFocus	= true;
 		clearCanvas();
 
 		var xPos = evt.clientX - canvas.getBoundingClientRect().left;
 		var yPos = evt.clientY - canvas.getBoundingClientRect().top;
 		mouseDown = true;
 		context.beginPath();
+		drawNote(evt);
+		addTextBox();
 
-		// var input = document.createElement("input");
-		// input.type = "text";
-		// input.className = "css-class-name"; // set the CSS class
-		// var input = new CanvasInput({
-		//   canvas: document.getElementById('dropzone'), 
-		//   x : xPos,
-		//   y : yPos,
-		//   fontSize: 18,
-		//   fontFamily: 'Arial',
-		//   fontColor: '#212121',
-		//   fontWeight: 'bold',
-		//   width: 300,
-		//   padding: 8,
-		//   borderWidth: 1,
-		//   borderColor: '#000',
-		//   borderRadius: 3,
-		//   boxShadow: '1px 1px 0px #fff',
-		//   innerShadow: '0px 0px 5px rgba(0, 0, 0, 0.5)',
-		//   placeHolder: 'Enter message here...'
-		// });
-
-		//document.getElemen	tById("main-content").appendChild(input); //
 	}, false);
 
-	canvas.addEventListener("keyup", function (evt) {
-		if (68 == evt.keyCode) {
-			alert("you press enter!");
+	// Enter key event listener, if canvas has focus(have not implemented yet)
+	// this is where the input box would get saved and sent to the database
+	window.addEventListener("keyup", function (evt) {
+		if ( 13 == evt.keyCode && canvasFocus) {
+			//alert("you press enter!");
 			console.log("you press enter!");
+		  alert(input.value());
+		  //document.getElementById('input').style.display="none";
+			context.drawImage(img, 0, 0, 500, 500);
+			context.clearRect(0, 0, canvas.width, canvas.height);
+
 		}
 	});
 
-	// Detect mouseup
+	// Mpuseup event listener
 	canvas.addEventListener("mouseup", function (evt) {
 		mouseDown = false;
 		var colors = context.getImageData(evt.layerX, evt.layerY, 1, 1).data;
 		brushColor = "rgb(" + colors[0] + ", " + colors[1] + ", " + colors[2] + ")";
 	}, false);
 
-	// Draw, if mouse button is pressed
+	// Mousemove event listener
 	canvas.addEventListener("mousemove", function (evt) {
 		if (mouseDown) {
 			context.strokeStyle = brushColor;
@@ -124,7 +101,7 @@ function dragNdrop() {
 		}
 	}, false);
 
-	// To enable drag and drop
+	// dragover event listener
 	canvas.addEventListener("dragover", function (evt) {
 		evt.preventDefault();
 	}, false);
@@ -132,11 +109,12 @@ function dragNdrop() {
 	// Handle dropped image file - only Firefox and Google Chrome
 	canvas.addEventListener("drop", function (evt) {
 		var files = evt.dataTransfer.files;
+
 		if (files.length > 0) {
 			var file = files[0];
 			if (typeof FileReader !== "undefined" && file.type.indexOf("image") != -1) {
 				var reader = new FileReader();
-				// Note: addEventListener doesn't work in Google Chrome for this event
+
 				reader.onload = function (evt) {
 					img.src = evt.target.result;
 				};
@@ -146,9 +124,11 @@ function dragNdrop() {
 		evt.preventDefault();
 	}, false);
 
-	// Save image
+	// Save image button
 	var saveImage = document.createElement("button");
 	saveImage.innerHTML = "Save Edited Image";
+
+	// saveImage btn event listener
 	saveImage.addEventListener("click", function (evt) {
 		var dt = canvas.toDataURL("image/png");
 		//alert("button clicked");
@@ -159,24 +139,47 @@ function dragNdrop() {
 	}, false);
 	document.getElementById("main-content").appendChild(saveImage);
 
+    // original image button annd event listener
 	var button = document.getElementById('btn-download');
 	button.addEventListener('click', function (e) {
 	    //var dataURL = canvas.toDataURL('image/png');
 	    window.open(originalImage);
 	});
-
-	 // put it into the DOM
-	// var imgd = context.getImageData(0, 0, canvas.width, canvas.height);
-	// var pix = imgd.data;
-	// // Loop over each pixel and invert the color.
-	// var red = 0;
-	// for (var i = 0, n = pix.length; i < n; i += 4) {
-	//     pix[i  ] = 255 - pix[i  ]; // red
-	//     pix[i+1] = 255 - pix[i+1]; // green
-	//     pix[i+2] = 255 - pix[i+2]; // blue
-	//     // i+3 is alpha (the fourth element)
-	// }
-	// alert("red value ")
-	// context.putImageData(imgd, 0, 0);
-
 	}
+
+function addTextBox() {
+	//Create an input type dynamically.
+	var element = document.createElement("input");
+
+	//Create Labels
+	var label = document.createElement("Label");
+	label.innerHTML = "Edit id: " + textEditID++;
+
+	//Assign different attributes to the element.
+	element.setAttribute("type", "text");
+	element.setAttribute("value", "");
+	element.setAttribute("name", "Test Name");
+	element.setAttribute("style", "width:200px");
+
+	label.setAttribute("style", "font-weight:normal");
+
+	// 'foobar' is the div id, where new fields are to be added
+	var foo = document.getElementById("input-container");
+
+	//Append the element in page (in span).
+	foo.appendChild(label);
+	foo.appendChild(element);
+}
+
+function drawNote(evt) {
+	var canvas = document.getElementById("dropzone");
+	var ctx = canvas.getContext("2d");
+	var xPos = evt.clientX - canvas.getBoundingClientRect().left;
+	var yPos = evt.clientY - canvas.getBoundingClientRect().top;
+
+	ctx.beginPath();
+	ctx.lineWidth="4";
+	ctx.strokeStyle="green";
+	ctx.rect(xPos,yPos,50,50);
+	ctx.stroke();
+}
