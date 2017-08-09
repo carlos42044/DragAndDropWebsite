@@ -68,6 +68,7 @@ function dragNdrop() {
 		// context.beginPath();
 		drawNote(evt);
 		addTextBox();
+		invertColors();
 
 	}, false);
 
@@ -189,4 +190,24 @@ function drawNote(evt) {
 
 function whateverYouWant(xPos, yPos, text){
 
+}
+
+function invertColors() {
+	var canvas = document.getElementById("dropzone");
+	var ctx = canvas.getContext("2d");
+
+	var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	var pixels = imageData.data;
+	var numPixels = imageData.width * imageData.height;
+
+	console.log("number of pixels : " + numPixels);
+
+	for (var i = 0; i < numPixels; i++) {
+		pixels[i*4] =     255 - pixels[i*4]; // red
+		pixels[i*4 + 1] = 255 - pixels[i*4 + 2]; // green
+		pixels[i*4 + 2] = 255 - pixels[i*4 + 3]; // blue;
+	}
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.putImageData(imageData, 0, 0);
 }
