@@ -60,8 +60,7 @@ function dragNdrop() {
 		clearCanvas();
 		mouseDown = true;
 		context.beginPath();
-
-		drawNote(evt);	
+		drawNote(evt);
 	}, false);
 
 	// this is where the input box would get saved and sent to the database
@@ -88,7 +87,7 @@ function dragNdrop() {
 		 var xPos = evt.clientX - canvas.getBoundingClientRect().left;
 		 var yPos = evt.clientY - canvas.getBoundingClientRect().top;
 		if (mouseDown) {
-			// works like an eyedropper tool 
+			// works like an eyedropper tool
 			//context.strokeStyle = brushColor;
 			context.strokeStyle =  "#ffff00";
 			context.lineWidth = 10;
@@ -122,7 +121,7 @@ function dragNdrop() {
 		evt.preventDefault();
 	}, false);
 
-	
+
 }
 
 function buttons() {
@@ -138,7 +137,7 @@ function buttons() {
 			img.src = originalImage;
 
 	})
-	document.getElementById("button-div").appendChild(loadOriginal);
+	document.getElementById("buttons").appendChild(loadOriginal);
 
 	// ################################################################################
 	// Save edited image button
@@ -151,7 +150,7 @@ function buttons() {
 		evt.preventDefault();
 	}, false);
 	// Add button to the page
-	document.getElementById("button-div").appendChild(saveImage);
+	document.getElementById("buttons").appendChild(saveImage);
 
   	// ################################################################################
 	// Save original image button
@@ -163,7 +162,7 @@ function buttons() {
 		evt.preventDefault();
 	}, false);
 	// Add button to the page
-	document.getElementById("button-div").appendChild(saveOriginal);
+	document.getElementById("buttons").appendChild(saveOriginal);
 
 	// ###############################################################################
 	// Brighten the image
@@ -199,7 +198,7 @@ function buttons() {
 	document.getElementById("button-div").appendChild(invertImage);
 
 	// ################################################################################
-	// Increase red 	
+	// Increase red
 	var increaseRed = document.createElement("button");
 	increaseRed.innerHTML = "Red";
 
@@ -209,7 +208,7 @@ function buttons() {
 
 	document.getElementById("button-div").appendChild(increaseRed);
 
-	// ################################################################################ // Increase blue var increaseBlue = document.createElement("buttom");
+	// ################################################################################
  	var increaseGreen = document.createElement("button");
  	increaseGreen.innerHTML = "Green";
 
@@ -218,8 +217,8 @@ function buttons() {
  	}, false);
 
  	document.getElementById("button-div").appendChild(increaseGreen);
- 	
- 	// ################################################################################ // Increase blue var increaseBlue = document.createElement("buttom");
+
+ 	// ################################################################################
  	var increaseBlue = document.createElement("button");
  	increaseBlue.innerHTML = "Blue";
 
@@ -229,7 +228,17 @@ function buttons() {
  	increaseBlue.value = 0;
 
  	document.getElementById("button-div").appendChild(increaseBlue);
- 	
+
+	// ################################################################################
+	var grayScaleImage = document.createElement("button");
+	grayScaleImage.innerHTML = "Gray Scale";
+
+	grayScaleImage.addEventListener("click", function(evt) {
+		grayScale();
+	}, false);
+
+	document.getElementById("button-div").appendChild(grayScaleImage);
+
 }
 
 
@@ -260,7 +269,7 @@ function addTextBox(id) {
 function drawNote(evt) {
 	var canvas = document.getElementById("dropzone");
 	var ctx = canvas.getContext("2d");
-	
+
 	var xPos = evt.clientX - canvas.getBoundingClientRect().left;
 	var yPos = evt.clientY - canvas.getBoundingClientRect().top;
 
@@ -273,7 +282,7 @@ function drawNote(evt) {
 	addTextBox();
 }
 
-// Note object to save the notes 
+// Note object to save the notes
 function Note(xPos, yPos, text){
 	this.id = textEditID++;
 	this.xPos = xPos;
@@ -296,6 +305,24 @@ function invertColors() {
 	}
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.putImageData(imageData, 0, 0);
+}
+
+function grayScale() {
+	var canvas = document.getElementById("dropzone");
+	var ctx = canvas.getContext("2d");
+
+	var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	var pixels = imageData.data;
+	var numPixels = imageData.width * imageData.height;
+
+	for (var i = 0; i < numPixels; i++) {
+		var average = (pixels[i*4] + pixels[i*4 + 1] + pixels[i*4 + 2] ) /3;
+		pixels[i*4]		=  average;
+		pixels[i*4 +1] =  average;
+		pixels[i*4 +2] =  average;
+	}
+	ctx.clearRect(0,0, canvas.width, canvas.height);
 	ctx.putImageData(imageData, 0, 0);
 }
 
@@ -333,5 +360,3 @@ function brightenImage() {
 	ctx.clearRect(0,0, canvas.width, canvas.height);
 	ctx.putImageData(imageData, 0, 0);
 }
-
-
