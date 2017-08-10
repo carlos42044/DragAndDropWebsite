@@ -68,8 +68,10 @@ function dragNdrop() {
 		// context.beginPath();
 		drawNote(evt);
 		addTextBox();
-		invertColors();
-
+		//grayScale();
+		darkenImage(-10, -10, -10);
+		//invertColors();
+		//brightenImage();
 	}, false);
 
 	// Enter key event listener, if canvas has focus(have not implemented yet)
@@ -148,7 +150,7 @@ function dragNdrop() {
 	    //var dataURL = canvas.toDataURL('image/png');
 	    window.open(originalImage);
 	});
-	}
+}
 
 function addTextBox() {
 	//Create an input type dynamically.
@@ -200,8 +202,6 @@ function invertColors() {
 	var pixels = imageData.data;
 	var numPixels = imageData.width * imageData.height;
 
-	console.log("number of pixels : " + numPixels);
-
 	for (var i = 0; i < numPixels; i++) {
 		pixels[i*4] =     255 - pixels[i*4]; // red
 		pixels[i*4 + 1] = 255 - pixels[i*4 + 2]; // green
@@ -209,5 +209,40 @@ function invertColors() {
 	}
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.putImageData(imageData, 0, 0);
+}
+
+function darkenImage(r, g, b) {
+	var canvas = document.getElementById("dropzone");
+	var ctx = canvas.getContext("2d");
+
+	var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	var pixels = imageData.data;
+	var numPixels = imageData.width * imageData.height;
+
+	for (var i = 0; i < numPixels; i++) {
+		pixels[i*4]		=  pixels[i*4] + r;
+		pixels[i*4 +1] =  pixels[i*4 +1] + g;
+		pixels[i*4 +2] =  pixels[i*4+2] +b;
+	}
+	ctx.clearRect(0,0, canvas.width, canvas.height);
+	ctx.putImageData(imageData, 0, 0);
+}
+
+function brightenImage() {
+	var canvas = document.getElementById("dropzone");
+	var ctx = canvas.getContext("2d");
+
+	var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	var pixels = imageData.data;
+	var numPixels = imageData.width * imageData.height;
+
+	for (var i = 0; i < numPixels; i++) {
+		var r = Math.floor((Math.random() * 255 )+ 1);
+		//pixels[i*4]		=  pixels[i*4] + 10;
+		//pixels[i*4 +1] =  pixels[i*4 +1] + 100;
+		pixels[i*4 +2] =  pixels[i*4+2] + 100;
+	}
+	ctx.clearRect(0,0, canvas.width, canvas.height);
 	ctx.putImageData(imageData, 0, 0);
 }
