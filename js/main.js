@@ -73,7 +73,7 @@ function dragNdrop() {
 
 	// this is where the input box would get saved and sent to the database
 	window.addEventListener("keyup", function (evt) {
-		if ( 13 == evt.keyCode && canvasFocus) {
+		if ( 13 == evt.keyCode) {
 			console.log("you press enter!");
 		  //document.getElementById('input').style.display="none";
 			//context.drawImage(img, 0, 0, 500, 500);
@@ -319,7 +319,7 @@ function redo() {
 		ctx.drawImage(img, 0, 0);
 		//drawnYet = false;
 	}
-	alert(redoStack.length);
+
 	if (redoStack.length > 0) {
 		//alert(undoStack.length);
 		img.src = redoStack.pop();
