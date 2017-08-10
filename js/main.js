@@ -1,12 +1,15 @@
-
+var drawnYet = false;
 
 var originalImage;
 var inputCreated = false;
 var input = document.createElement("input");
 var textEditID = 1000;
+var undoStack = [];
+var redoStack = [];
 
 
 function dragNdrop() {
+	// Load the buttons for image processing
 	buttons();
 
 	var canvas = document.getElementById("dropzone"),
@@ -52,12 +55,17 @@ function dragNdrop() {
 
 		// save the original image
 		originalImage = canvas.toDataURL("image/png");
+		// save in the stack
+		undoStack.push(originalImage);
 
 	}, false);
 
 	// Mousedown event listener
 	canvas.addEventListener("mousedown", function (evt) {
 		clearCanvas();
+		// adding image to undo stack
+		undoStack.push(canvas.toDataURL("img/png"));
+
 		mouseDown = true;
 		context.beginPath();
 		drawNote(evt);
@@ -79,6 +87,8 @@ function dragNdrop() {
 		mouseDown = false;
 		var colors = context.getImageData(evt.layerX, evt.layerY, 1, 1).data;
 		brushColor = "rgb(" + colors[0] + ", " + colors[1] + ", " + colors[2] + ")";
+		// adding image to undo stack
+		redoStack.push(canvas.toDataURL("img/png"));
 	}, false);
 
 	// Mousemove event listener
@@ -134,9 +144,8 @@ function buttons() {
 
 	loadOriginal.addEventListener("click", function(evt) {
 		ctx.drawImage(img, 0, 0);
-			img.src = originalImage;
-
-	})
+		img.src = originalImage;
+	}, false);
 	document.getElementById("buttons").appendChild(loadOriginal);
 
 	// ################################################################################
@@ -146,10 +155,9 @@ function buttons() {
 
 	saveImage.addEventListener("click", function (evt) {
 		var dt = document.getElementById("dropzone").toDataURL("image/png");
-		window.open(dt);
+		window.open(dt); 
 		evt.preventDefault();
 	}, false);
-	// Add button to the page
 	document.getElementById("buttons").appendChild(saveImage);
 
   	// ################################################################################
@@ -161,7 +169,6 @@ function buttons() {
 		window.open(originalImage);
 		evt.preventDefault();
 	}, false);
-	// Add button to the page
 	document.getElementById("buttons").appendChild(saveOriginal);
 
 	// ###############################################################################
@@ -170,9 +177,11 @@ function buttons() {
 	brightenImage.innerHTML = "Brighten";
 
 	brightenImage.addEventListener("click", function(evt) {
+		// adding image to undo stack
+		undoStack.push(canvas.toDataURL("img/png"));
 		pixelManipulate(10, 10, 10);
+ 		redoStack.push(canvas.toDataURL("img/png"));
 	}, false);
-
 	document.getElementById("button-div").appendChild(brightenImage);
 
 	// ################################################################################
@@ -181,9 +190,11 @@ function buttons() {
 	darkenImage.innerHTML = "Darken";
 
 	darkenImage.addEventListener("click", function(evt) {
-		pixelManipulate(-10, -10, -10);
+		// adding image to undo stack
+		undoStack.push(canvas.toDataURL("img/png"));
+		pixelManipulate(-10, -10, -10)
+ 		redoStack.push(canvas.toDataURL("img/png"));
 	}, false);
-
 	document.getElementById("button-div").appendChild(darkenImage);
 
 	// ################################################################################
@@ -192,9 +203,11 @@ function buttons() {
 	invertImage.innerHTML = ("Invert");
 
 	invertImage.addEventListener("click", function(evt) {
+		// adding image to undo stack
+		undoStack.push(canvas.toDataURL("img/png"));
 		invertColors();
+ 		redoStack.push(canvas.toDataURL("img/png"));
 	}, false);
-
 	document.getElementById("button-div").appendChild(invertImage);
 
 	// ################################################################################
@@ -203,9 +216,12 @@ function buttons() {
 	increaseRed.innerHTML = "Red";
 
 	increaseRed.addEventListener("click", function(evt) {
+		// adding image to undo stack
+		undoStack.push(canvas.toDataURL("img/png"));
 		pixelManipulate(10,0,0);
-	}, false);
+	    redoStack.push(canvas.toDataURL("img/png"));
 
+	}, false);
 	document.getElementById("button-div").appendChild(increaseRed);
 
 	// ################################################################################
@@ -213,7 +229,11 @@ function buttons() {
  	increaseGreen.innerHTML = "Green";
 
  	increaseGreen.addEventListener("click", function(evt){
+ 		// adding image to undo stack
+		undoStack.push(canvas.toDataURL("img/png"));
  		pixelManipulate(0,10,0);
+ 		redoStack.push(canvas.toDataURL("img/png"));
+
  	}, false);
 
  	document.getElementById("button-div").appendChild(increaseGreen);
@@ -223,10 +243,13 @@ function buttons() {
  	increaseBlue.innerHTML = "Blue";
 
  	increaseBlue.addEventListener("click", function(evt) {
+ 		// adding image to undo stack
+		undoStack.push(canvas.toDataURL("img/png"));
  		pixelManipulate(0,0,10);
+ 		redoStack.push(canvas.toDataURL("img/png"));
+
  	}, false);
  	increaseBlue.value = 0;
-
  	document.getElementById("button-div").appendChild(increaseBlue);
 
 	// ################################################################################
@@ -234,13 +257,77 @@ function buttons() {
 	grayScaleImage.innerHTML = "Gray Scale";
 
 	grayScaleImage.addEventListener("click", function(evt) {
+		// adding image to undo stack
+		undoStack.push(canvas.toDataURL("img/png"));
 		grayScale();
-	}, false);
+		redoStack.push(canvas.toDataURL("img/png"));
 
+	}, false);
 	document.getElementById("button-div").appendChild(grayScaleImage);
 
+	// ################################################################################
+	var undoBtn = document.createElement("button");
+	undoBtn.innerHTML = "Undo";
+
+	undoBtn.addEventListener("click", function(evt) {
+		if (!drawnYet) {
+			undo();
+		}
+	}, false);
+	document.getElementById("buttons").appendChild(undoBtn);
+
+	var redoBtn = document.createElement("button");
+	redoBtn.innerHTML = "Redo";
+	redoBtn.addEventListener("click", function (evt) {
+		redo();
+	}, false);
+	document.getElementById("buttons").appendChild(redoBtn);
 }
 
+// Buggy undo function
+function undo() {
+	drawnYet = true;
+	// the last image in the undoStack
+	var canvas = document.getElementById("dropzone");
+	var ctx = canvas.getContext("2d");
+	var img = new Image;
+	//var toDraw = undoStack.pop();
+	// alert(typeof toDraw);
+	img.onload = function () {
+		ctx.drawImage(img, 0, 0);
+		redoStack.push(canvas.toDataURL("img/png"));
+
+		drawnYet = false;
+	}
+
+	if (undoStack.length > 0) {
+		//alert(undoStack.length);
+		img.src = undoStack.pop();
+	} else {
+		//alert("reached after stack empty");
+		drawnYet = false;
+	}
+}
+
+// Buggy redo function
+function redo() {
+	var canvas = document.getElementById("dropzone");
+	var ctx = canvas.getContext("2d");
+	var img = new Image;
+
+	img.onload = function () {
+		ctx.drawImage(img, 0, 0);
+		//drawnYet = false;
+	}
+	alert(redoStack.length);
+	if (redoStack.length > 0) {
+		//alert(undoStack.length);
+		img.src = redoStack.pop();
+	} else {
+		//alert("reached after stack empty");
+		//drawnYet = false;
+	}
+}
 
 function addTextBox(id) {
 	//Create an input type dynamically.
@@ -360,3 +447,4 @@ function brightenImage() {
 	ctx.clearRect(0,0, canvas.width, canvas.height);
 	ctx.putImageData(imageData, 0, 0);
 }
+
