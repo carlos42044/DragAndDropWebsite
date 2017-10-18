@@ -155,7 +155,7 @@ function buttons() {
 
 	saveImage.addEventListener("click", function (evt) {
 		var dt = document.getElementById("dropzone").toDataURL("image/png");
-		window.open(dt); 
+		window.open(dt);
 		evt.preventDefault();
 	}, false);
 	document.getElementById("buttons").appendChild(saveImage);
@@ -251,6 +251,16 @@ function buttons() {
  	}, false);
  	increaseBlue.value = 0;
  	document.getElementById("button-div").appendChild(increaseBlue);
+
+	// ################################################################################
+	var histogramBtn = document.createElement("button");
+	histogramBtn.innerHTML = "Histogram";
+
+	histogramBtn.addEventListener("click", function(evt) {
+		histogram();
+	});
+
+	document.getElementById("button-div").appendChild(histogramBtn);
 
 	// ################################################################################
 	var grayScaleImage = document.createElement("button");
@@ -413,6 +423,45 @@ function grayScale() {
 	ctx.putImageData(imageData, 0, 0);
 }
 
+function histogram() {
+	var canvas = document.getElementById("dropzone");
+	var ctx = canvas.getContext("2d");
+
+	var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	var pixels = imageData.data;
+	var numPixels = imageData.width * imageData.height;
+
+	var red = 0;
+	var green = 0;
+	var blue = 0;
+	var count = 0;
+	var pixString;
+
+	for (var i = 0; i < numPixels; i++) {
+		count++;
+		var redPx = pixels[i*4];
+		var greenPx = pixels[i*4 +1];
+		var bluePx = pixels[i*4 +2];
+
+		if (redPx > greenPx && redPx > bluePx) {
+			redPx++;
+		} else if (greenPx > redPx && greenPx > bluePx) {
+			greenPx++;
+		} else if (bluePx > redPx && bluePx > greenPx) {
+			bluePx++;
+		}
+
+		//if (count > numPixels/2 && count < (numPixels/2 +100)) {
+			pixString += count + " | r: " + pixels[i*4] + " g: " + pixels[i*4 +1] + " b: " + pixels[i*4 + 2] + "\n";
+		//}
+	}
+	alert(pixString);
+	alert("red pixel: " + redPx + "\n" +
+			"green pixel: " + greenPx + "\n" +
+			"blue pixel: " + bluePx + "\nCount: " + count + " numPixels: " + numPixels);
+}
+
+
 function pixelManipulate(r, g, b) {
 	var canvas = document.getElementById("dropzone");
 	var ctx = canvas.getContext("2d");
@@ -447,4 +496,3 @@ function brightenImage() {
 	ctx.clearRect(0,0, canvas.width, canvas.height);
 	ctx.putImageData(imageData, 0, 0);
 }
-
