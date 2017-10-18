@@ -29,6 +29,16 @@
 			  width: 300px;
 			  height: 300px;
 			}*/
+
+			/* The slider handle (use webkit (Chrome, Opera, Safari, Edge) and moz (Firefox) to override default look) */
+			.slider::-webkit-slider-thumb {
+			    -webkit-appearance: none; /* Override default look */
+			    appearance: none;
+			    width: 25px; /* Set a specific slider handle width */
+			    height: 25px; /* Slider handle height */
+			    background: #4CAF50; /* Green background */
+			    cursor: pointer; /* Cursor on hover */
+			}
 		</style>
 	</head>
 	<body onload="dragNdrop()">
@@ -42,6 +52,19 @@
 			<canvas id="dropzone" width="500" height="500" tabindex="1">I am canvas</canvas>
 		</div>
 		<br><br>
+		<div id="slidecontainer">
+			<p id="redVal"></p>
+			Red: 
+  			<input type="range" min="1" max="100" value="50" class="slider" id="myRangeRed"> 
+
+  			<p id="greenVal"></p>
+			Green: 
+  			<input type="range" min="1" max="100" value="50" class="slider" id="myRangeGreen"> 
+
+  			<p id="greenVal"></p>
+			Blue: 
+  			<input type="range" min="1" max="100" value="50" class="slider" id="myRangeBlue"> 
+		</div>
 		<div id="buttons"></div>
 		<br>
 		<div id="button-div"> </div>

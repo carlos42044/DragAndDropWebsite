@@ -294,6 +294,69 @@ function buttons() {
 	document.getElementById("buttons").appendChild(redoBtn);
 }
 
+// Scalar for sliders
+var scalar = 4;
+
+
+// sliding control for red value
+var sliderRed = document.getElementById("myRangeRed");
+var outputRed = document.getElementById("redVal");
+outputRed.innerHTML = sliderRed.value; // Display the default slider value
+var initialValueRed;
+var firstRunRed = false;
+// Update the current slider value (each time you drag the slider handle)
+sliderRed.oninput = function() {
+	if (!firstRunRed) {
+		initialValueRed = this.value;
+		firstRunRed = true;
+	}
+
+    outputRed.innerHTML = this.value;
+
+    if (this.value >= initialValueRed) {
+    	console.log("called the positive val was " + this.value + " initialValue: " + initialValueRed);
+    	//pixelManipulate(this.value/10,0,0);
+    	pixelManipulate(1*scalar,0,0);
+    	initialValueRed = this.value;
+    } else {
+    	console.log("called the negative val was " + this.value + " initialValue: " + initialValueRed	);
+    	//pixelManipulate((this.value/10)*-1,0,0);
+    	pixelManipulate(-1*scalar,0,0);
+    	initialValueRed = this.value;
+    }
+} 
+
+
+// sliding control for blue value
+var sliderRed = document.getElementById("myRangeRed");
+var outputRed = document.getElementById("redVal");
+outputRed.innerHTML = sliderRed.value; // Display the default slider value
+var initialValueRed;
+var firstRunRed = false;
+// Update the current slider value (each time you drag the slider handle)
+sliderRed.oninput = function() {
+	if (!firstRunRed) {
+		initialValueRed = this.value;
+		firstRunRed = true;
+	}
+
+    outputRed.innerHTML = this.value;
+
+    if (this.value >= initialValueRed) {
+    	console.log("called the positive val was " + this.value + " initialValue: " + initialValueRed);
+    	//pixelManipulate(this.value/10,0,0);
+    	pixelManipulate(1*scalar,0,0);
+    	initialValueRed = this.value;
+    } else {
+    	console.log("called the negative val was " + this.value + " initialValue: " + initialValueRed	);
+    	//pixelManipulate((this.value/10)*-1,0,0);
+    	pixelManipulate(-1*scalar,0,0);
+    	initialValueRed = this.value;
+    }
+} 
+
+
+
 // Buggy undo function
 function undo() {
 	drawnYet = true;
